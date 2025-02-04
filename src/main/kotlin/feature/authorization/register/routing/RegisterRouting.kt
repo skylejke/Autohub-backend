@@ -1,14 +1,13 @@
-package ru.point.feature.register.routing
+package ru.point.feature.authorization.register.routing
 
 import cache.InMemoryCache
-import cache.TokenCache
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import ru.point.feature.register.model.RegisterRequest
-import ru.point.feature.register.model.RegisterResponse
-import ru.point.utils.JwtTokenUtils
+import ru.point.feature.authorization.register.model.RegisterRequest
+import ru.point.feature.authorization.register.model.RegisterResponse
+import ru.point.utils.TokenFactory
 import ru.point.utils.validate
 
 fun Application.configureRegisterRouting() {
@@ -20,9 +19,9 @@ fun Application.configureRegisterRouting() {
                 call.respond(it.httpStatusCode, it.message)
             }
 
-            val token = JwtTokenUtils.generate(request.username)
+            val token = TokenFactory.generate(request.username)
             InMemoryCache.userList.add(request)
-            InMemoryCache.tokenList.add(TokenCache(username = request.username, token = token))
+            InMemoryCache.tokenList.add(token)
 
             call.respond(RegisterResponse(token = token))
             return@post

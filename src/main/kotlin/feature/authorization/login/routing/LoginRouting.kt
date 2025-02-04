@@ -1,15 +1,14 @@
-package ru.point.feature.login.routing
+package ru.point.feature.authorization.login.routing
 
 import cache.InMemoryCache
-import cache.TokenCache
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import ru.point.feature.login.model.LoginRequest
-import ru.point.feature.login.model.LoginResponse
-import ru.point.utils.JwtTokenUtils
+import ru.point.feature.authorization.login.model.LoginRequest
+import ru.point.feature.authorization.login.model.LoginResponse
+import ru.point.utils.TokenFactory
 
 fun Application.configureLoginRouting() {
     routing {
@@ -22,8 +21,8 @@ fun Application.configureLoginRouting() {
                 user.password != request.password -> call.respond(HttpStatusCode.Forbidden, "Password is incorrect")
 
                 user.password == request.password -> {
-                    val token = JwtTokenUtils.generate(request.username)
-                    InMemoryCache.tokenList.add(TokenCache(username = request.username, token = token))
+                    val token = TokenFactory.generate(request.username)
+                    InMemoryCache.tokenList.add(token)
                     call.respond(LoginResponse(token = token))
                 }
 

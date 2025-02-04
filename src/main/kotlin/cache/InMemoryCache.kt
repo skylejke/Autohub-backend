@@ -1,13 +1,10 @@
 package cache
 
-import ru.point.feature.register.model.RegisterRequest
+import ru.point.feature.authorization.model.Token
+import ru.point.feature.authorization.register.model.RegisterRequest
 
-data class TokenCache(
-    val username: String,
-    val token: String
-)
 
 object InMemoryCache {
     val userList: MutableList<RegisterRequest> = mutableListOf()
-    val tokenList: MutableList<TokenCache> = mutableListOf()
+    val tokenList: MutableList<Token> = mutableListOf()
 }

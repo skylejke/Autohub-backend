@@ -2,7 +2,7 @@ package ru.point.utils
 
 import cache.InMemoryCache
 import io.ktor.http.*
-import ru.point.feature.register.model.RegisterRequest
+import ru.point.feature.authorization.register.model.RegisterRequest
 
 fun RegisterRequest.validate(): ValidationError? =
     when {

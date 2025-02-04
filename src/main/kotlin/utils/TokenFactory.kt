@@ -3,12 +3,12 @@ package ru.point.utils
 import com.nimbusds.jose.JWSAlgorithm
 import com.nimbusds.jose.JWSHeader
 import com.nimbusds.jose.crypto.MACSigner
-import com.nimbusds.jose.crypto.MACVerifier
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
+import ru.point.feature.authorization.model.Token
 import java.util.*
 
-object JwtTokenUtils {
+object TokenFactory {
 
     private const val EXPIRATION_TIME = 1000L * 60 * 60 * 24 * 182
 
@@ -17,7 +17,7 @@ object JwtTokenUtils {
 
     private val jwsAlgorithm = JWSAlgorithm.HS256
 
-    fun generate(username: String): String {
+    fun generate(username: String): Token {
         val claimsSet = JWTClaimsSet.Builder()
             .subject(username)
             .expirationTime(Date(System.currentTimeMillis() + EXPIRATION_TIME))
@@ -26,15 +26,6 @@ object JwtTokenUtils {
         val signedJWT = SignedJWT(JWSHeader(jwsAlgorithm), claimsSet)
 
         signedJWT.sign(MACSigner(SECRET.toByteArray()))
-        return signedJWT.serialize()
-    }
-
-    fun isValid(token: String): String? {
-        val signedJWT = SignedJWT.parse(token)
-        return if (signedJWT.verify(MACVerifier(SECRET.toByteArray())) &&
-            signedJWT.jwtClaimsSet.expirationTime.after(Date())
-        ) {
-            signedJWT.jwtClaimsSet.subject
-        } else null
+        return Token(signedJWT.serialize())
     }
 }
