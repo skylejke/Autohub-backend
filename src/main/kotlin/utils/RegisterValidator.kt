@@ -1,7 +1,7 @@
 package ru.point.utils
 
-import cache.InMemoryCache
 import io.ktor.http.*
+import ru.point.database.users.UsersTable
 import ru.point.feature.authorization.register.model.RegisterRequest
 
 fun RegisterRequest.validate(): ValidationError? =
@@ -14,17 +14,17 @@ fun RegisterRequest.validate(): ValidationError? =
             "Phone number is invalid"
         )
 
-        InMemoryCache.userList.map { it.username }.contains(this.username) -> ValidationError(
+        UsersTable.getAllUsers().map { it.username }.contains(this.username) -> ValidationError(
             HttpStatusCode.Conflict,
             "This username is already taken"
         )
 
-        InMemoryCache.userList.map { it.email }.contains(this.email) -> ValidationError(
+        UsersTable.getAllUsers().map { it.email }.contains(this.email) -> ValidationError(
             HttpStatusCode.Conflict,
             "This email is already taken"
         )
 
-        InMemoryCache.userList.map { it.phoneNumber }.contains(this.email) -> ValidationError(
+        UsersTable.getAllUsers().map { it.phoneNumber }.contains(this.phoneNumber) -> ValidationError(
             HttpStatusCode.Conflict,
             "This phone number is already taken"
         )
