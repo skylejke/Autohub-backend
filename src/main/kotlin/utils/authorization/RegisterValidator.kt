@@ -1,8 +1,9 @@
-package ru.point.utils
+package ru.point.utils.authorization
 
 import io.ktor.http.*
 import ru.point.database.users.UsersTable
 import ru.point.feature.authorization.register.model.RegisterRequest
+import ru.point.utils.ValidationError
 
 fun RegisterRequest.validate(): ValidationError? =
     when {
@@ -32,5 +33,18 @@ fun RegisterRequest.validate(): ValidationError? =
         else -> null
     }
 
+fun String.isValidUserName(): Boolean {
+    return this.isNotBlank() && this.length >= 5 && this.length <= 20 && !this.first().isDigit()
+}
 
-data class ValidationError(val httpStatusCode: HttpStatusCode, val message: String)
+fun String.isValidPassword(): Boolean {
+    return this.isNotBlank() && this.length >= 8
+}
+
+fun String.isValidEmail(): Boolean {
+    return this.isNotBlank() && Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\$").matches(this)
+}
+
+fun String.isValidPhoneNumber(): Boolean {
+    return this.isNotBlank() && Regex("^(\\+7|8)[0-9]{10}$").matches(this)
+}

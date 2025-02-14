@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
 object UsersTable : Table("users") {
-    private val id = varchar("id", 50)
+    val id = varchar("id", 50)
     private val username = varchar("username", 20)
     private val email = varchar("email", 50)
     private val phoneNumber = varchar("phoneNumber", 50)

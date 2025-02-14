@@ -1,4 +1,4 @@
-package ru.point.utils
+package ru.point.utils.authorization
 
 import com.nimbusds.jose.JWSAlgorithm
 import com.nimbusds.jose.JWSHeader

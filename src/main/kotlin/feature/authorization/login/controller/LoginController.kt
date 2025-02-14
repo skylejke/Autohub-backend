@@ -9,7 +9,7 @@ import ru.point.database.tokens.TokensTable
 import ru.point.database.users.UsersTable
 import ru.point.feature.authorization.login.model.LoginRequest
 import ru.point.feature.authorization.login.model.LoginResponse
-import ru.point.utils.TokenFactory
+import ru.point.utils.authorization.TokenFactory
 
 class LoginController(private val call: ApplicationCall) {
     suspend fun login() {

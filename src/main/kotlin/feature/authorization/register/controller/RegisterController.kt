@@ -11,8 +11,8 @@ import ru.point.database.users.UserDto
 import ru.point.database.users.UsersTable
 import ru.point.feature.authorization.register.model.RegisterRequest
 import ru.point.feature.authorization.register.model.RegisterResponse
-import ru.point.utils.TokenFactory
-import ru.point.utils.validate
+import ru.point.utils.authorization.TokenFactory
+import ru.point.utils.authorization.validate
 
 class RegisterController(private val call: ApplicationCall) {
     suspend fun register() {
@@ -20,14 +20,12 @@ class RegisterController(private val call: ApplicationCall) {
 
         request.validate()?.let {
             call.respond(it.httpStatusCode, it.message)
-            return
         }
 
         val userDto = UsersTable.getUserByUsername(request.username)
 
         if (userDto != null) {
             call.respond(HttpStatusCode.Conflict, "User already exists")
-            return
         }
 
         val token = TokenFactory.generate(request.username)
@@ -42,9 +40,9 @@ class RegisterController(private val call: ApplicationCall) {
                 )
             )
         } catch (e: ExposedSQLException) {
-            call.respond(HttpStatusCode.Conflict, "User already exists")
+            call.respond(HttpStatusCode.Conflict, "User already exists: ${e.localizedMessage}")
         } catch (e: Exception) {
-            call.respond(HttpStatusCode.BadRequest, "Can't create user ${e.localizedMessage}")
+            call.respond(HttpStatusCode.BadRequest, "Can't create user: ${e.localizedMessage}")
         }
 
         TokensTable.insert(TokenDto(token = token))

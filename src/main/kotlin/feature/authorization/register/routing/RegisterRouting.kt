@@ -7,8 +7,7 @@ import ru.point.feature.authorization.register.controller.RegisterController
 fun Application.configureRegisterRouting() {
     routing {
         post("/register") {
-            val registerController = RegisterController(call)
-            registerController.register()
+            RegisterController(call).register()
         }
 
     }

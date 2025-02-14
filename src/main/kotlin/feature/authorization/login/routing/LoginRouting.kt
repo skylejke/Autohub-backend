@@ -7,8 +7,7 @@ import ru.point.feature.authorization.login.controller.LoginController
 fun Application.configureLoginRouting() {
     routing {
         post("/login") {
-            val loginController = LoginController(call)
-            loginController.login()
+            LoginController(call).login()
         }
     }
 }
