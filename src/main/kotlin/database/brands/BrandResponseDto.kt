@@ -1,6 +1,6 @@
 package ru.point.database.brands
 
-data class BrandDto(
+data class BrandResponseDto(
     val id: Int,
     val name: String,
 )

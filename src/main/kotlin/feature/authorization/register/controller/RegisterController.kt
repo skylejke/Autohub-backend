@@ -7,10 +7,11 @@ import io.ktor.server.response.*
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import ru.point.database.tokens.TokenDto
 import ru.point.database.tokens.TokensTable
-import ru.point.database.users.UserDto
 import ru.point.database.users.UsersTable
+import ru.point.database.users.asUserDto
 import ru.point.feature.authorization.register.model.RegisterRequest
 import ru.point.feature.authorization.register.model.RegisterResponse
+import ru.point.utils.ValidationException
 import ru.point.utils.authorization.TokenFactory
 import ru.point.utils.authorization.validate
 
@@ -18,27 +19,21 @@ class RegisterController(private val call: ApplicationCall) {
     suspend fun register() {
         val request = call.receive<RegisterRequest>()
 
-        request.validate()?.let {
-            call.respond(it.httpStatusCode, it.message)
+        try {
+            request.validate()
+        } catch (e: ValidationException) {
+            call.respond(HttpStatusCode.BadRequest, e.message ?: "")
         }
 
-        val userDto = UsersTable.getUserByUsername(request.username)
 
-        if (userDto != null) {
+        if (UsersTable.getUserByUsername(request.username) != null) {
             call.respond(HttpStatusCode.Conflict, "User already exists")
         }
 
         val token = TokenFactory.generate(request.username)
 
         try {
-            UsersTable.insert(
-                UserDto(
-                    username = request.username,
-                    email = request.email,
-                    phoneNumber = request.phoneNumber,
-                    password = request.password,
-                )
-            )
+            UsersTable.insert(request.asUserDto)
         } catch (e: ExposedSQLException) {
             call.respond(HttpStatusCode.Conflict, "User already exists: ${e.localizedMessage}")
         } catch (e: Exception) {
@@ -47,6 +42,6 @@ class RegisterController(private val call: ApplicationCall) {
 
         TokensTable.insert(TokenDto(token = token))
 
-        call.respond(RegisterResponse(token = token))
+        call.respond(HttpStatusCode.Created, RegisterResponse(token = token))
     }
 }

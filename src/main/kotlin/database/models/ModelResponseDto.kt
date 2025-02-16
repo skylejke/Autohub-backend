@@ -1,6 +1,6 @@
 package ru.point.database.models
 
-data class ModelDto (
+data class ModelResponseDto (
     val id: Int,
     val name: String,
     val brandName: String,

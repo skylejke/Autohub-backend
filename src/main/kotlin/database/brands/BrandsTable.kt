@@ -10,9 +10,9 @@ object BrandsTable : Table("brands") {
 
     override val primaryKey = PrimaryKey(id)
 
-    fun getBrands(): List<BrandDto> = transaction {
+    fun getBrands(): List<BrandResponseDto> = transaction {
         selectAll().map {
-            BrandDto(
+            BrandResponseDto(
                 id = it[BrandsTable.id],
                 name = it[name],
             )

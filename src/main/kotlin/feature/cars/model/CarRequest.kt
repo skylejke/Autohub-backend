@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class CarRequest(
     val brand: String,
     val model: String,
-    val year: Int,
+    val year: Short,
     val price: Int,
     val mileage: Int,
     val enginePower: Short,
@@ -18,7 +18,7 @@ data class CarRequest(
     val drivetrain: String,
     val wheel: String,
     val condition: String,
-    val owners: Int,
+    val owners: Byte,
     val vin: String,
     val ownershipPeriod: String,
     val description: String,

@@ -1,15 +1,18 @@
 package ru.point.database.cars
 
-import org.jetbrains.exposed.sql.ReferenceOption
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.statements.UpdateStatement
+import ru.point.database.ads.AdRequestDto
 import ru.point.database.brands.BrandsTable
 import ru.point.database.models.ModelsTable
+import ru.point.utils.cars.BrandNotFoundException
+import ru.point.utils.cars.ModelNotFoundException
 import java.util.*
 
 
 object CarsTable : Table("cars") {
     val id = varchar("id", 50).clientDefault { UUID.randomUUID().toString() }
-    val brandId = integer("brand_id").references(BrandsTable.id, onDelete = ReferenceOption.CASCADE)
+    private val brandId = integer("brand_id").references(BrandsTable.id, onDelete = ReferenceOption.CASCADE)
     val modelId = integer("model_id").references(ModelsTable.id, onDelete = ReferenceOption.CASCADE)
     val year = short("year")
     val price = integer("price")
@@ -29,4 +32,43 @@ object CarsTable : Table("cars") {
     val description = varchar("description", 1000)
 
     override val primaryKey = PrimaryKey(id)
+
+    fun insertCar(carId: String, adRequestDto: AdRequestDto) {
+        val brandRow = BrandsTable
+            .select { BrandsTable.name eq adRequestDto.car.brand }
+            .singleOrNull() ?: throw BrandNotFoundException(adRequestDto.car.brand)
+
+        val modelRow = ModelsTable
+            .select { (ModelsTable.name eq adRequestDto.car.model) and (ModelsTable.brandId eq brandRow[BrandsTable.id]) }
+            .singleOrNull()
+            ?: throw ModelNotFoundException(adRequestDto.car.brand, adRequestDto.car.model)
+
+        CarsTable.insert {
+            it[id] = carId
+            it[brandId] = brandRow[BrandsTable.id]
+            it[modelId] = modelRow[ModelsTable.id]
+            it[year] = adRequestDto.car.year
+            it[price] = adRequestDto.car.price
+            it[mileage] = adRequestDto.car.mileage
+            it[bodyType] = adRequestDto.car.bodyType
+            it[enginePower] = adRequestDto.car.enginePower
+            it[engineCapacity] = adRequestDto.car.engineCapacity
+            it[fuelType] = adRequestDto.car.fuelType
+            it[color] = adRequestDto.car.color
+            it[transmission] = adRequestDto.car.transmission
+            it[drivetrain] = adRequestDto.car.drivetrain
+            it[wheel] = adRequestDto.car.wheel
+            it[condition] = adRequestDto.car.condition
+            it[owners] = adRequestDto.car.owners
+            it[vin] = adRequestDto.car.vin
+            it[ownershipPeriod] = adRequestDto.car.ownershipPeriod
+            it[description] = adRequestDto.car.description
+        }
+    }
+
+    fun updateById(id: String, body: CarsTable.(UpdateStatement) -> Unit) {
+        CarsTable.update({ CarsTable.id eq id }) {
+            body.invoke(this, it)
+        }
+    }
 }

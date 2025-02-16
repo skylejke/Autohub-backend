@@ -15,7 +15,7 @@ object ModelsTable : Table("models") {
         (ModelsTable innerJoin BrandsTable)
             .select { BrandsTable.name.lowerCase() eq brandName.lowercase() }
             .map {
-                ModelDto(
+                ModelResponseDto(
                     id = it[ModelsTable.id],
                     name = it[name],
                     brandName = it[BrandsTable.name]

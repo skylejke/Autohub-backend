@@ -1,6 +1,11 @@
 package ru.point.database.ads
 
+import database.ads.AdsTable
+import database.car_ad_photos.CarAdsPhotosTable
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.select
 import ru.point.database.cars.CarResponseDto
+import ru.point.database.cars.asCarResponseDto
 import java.time.LocalDate
 
 data class AdResponseDto(
@@ -10,3 +15,14 @@ data class AdResponseDto(
     val car: CarResponseDto,
     val photos: List<String>
 )
+
+val ResultRow.asAdResponseDto
+    get() = AdResponseDto(
+        id = get(AdsTable.id),
+        creationDate = get(AdsTable.creationDate),
+        userId = get(AdsTable.userId),
+        car = asCarResponseDto,
+        photos = CarAdsPhotosTable
+            .select { CarAdsPhotosTable.carAdId eq get(AdsTable.id) }
+            .map { photoRow -> photoRow[CarAdsPhotosTable.uri] }
+    )

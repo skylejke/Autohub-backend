@@ -1,25 +1,28 @@
 package ru.point.utils.cars
 
-import io.ktor.http.*
-import ru.point.feature.cars.model.CarRequest
-import ru.point.utils.ValidationError
+import ru.point.database.ads.AdRequestDto
+import ru.point.utils.ValidationException
 import ru.point.utils.cars.enums.*
 
-fun CarRequest.validate(): ValidationError? =
-    when {
-        !bodyType.isValidBodyType() -> ValidationError(HttpStatusCode.Forbidden, "Body type is invalid")
-        !condition.isValidCondition() -> ValidationError(HttpStatusCode.Forbidden, "Condition is invalid")
-        !drivetrain.isValidDrivetrain() -> ValidationError(HttpStatusCode.Forbidden, "Drivetrain is invalid")
-        !fuelType.isValidFuelType() -> ValidationError(HttpStatusCode.Forbidden, "Fuel type is invalid")
-        !transmission.isValidTransmission() -> ValidationError(HttpStatusCode.Forbidden, "Transmission is invalid")
-        !wheel.isValidWheel() -> ValidationError(HttpStatusCode.Forbidden, "Wheel is invalid")
-        !year.isValidYear() -> ValidationError(HttpStatusCode.Forbidden, "Year is invalid")
-        !price.isValidPrice() -> ValidationError(HttpStatusCode.Forbidden, "Price is invalid")
-        !mileage.isValidMileage() -> ValidationError(HttpStatusCode.Forbidden, "Mileage is invalid")
-        !enginePower.isValidPower() -> ValidationError(HttpStatusCode.Forbidden, "Power is invalid")
-        !engineCapacity.isValidCapacity() -> ValidationError(HttpStatusCode.Forbidden, "Capacity is invalid")
-        else -> null
+fun AdRequestDto.validate() {
+    with(car) {
+        val message = when {
+            !bodyType.isValidBodyType() -> "Body type is invalid"
+            !condition.isValidCondition() -> "Condition is invalid"
+            !drivetrain.isValidDrivetrain() -> "Drivetrain is invalid"
+            !fuelType.isValidFuelType() -> "Fuel type is invalid"
+            !transmission.isValidTransmission() -> "Transmission is invalid"
+            !wheel.isValidWheel() -> "Wheel is invalid"
+            !year.isValidYear() -> "Year is invalid"
+            !price.isValidPrice() -> "Price is invalid"
+            !mileage.isValidMileage() -> "Mileage is invalid"
+            !enginePower.isValidPower() -> "Power is invalid"
+            !engineCapacity.isValidCapacity() -> "Capacity is invalid"
+            else -> null
+        }
+        message?.let { throw ValidationException(it) }
     }
+}
 
 fun String.isValidBodyType() = BodyTypes.entries.any { it.toString() == this }
 
@@ -33,7 +36,7 @@ fun String.isValidTransmission() = Transmissions.entries.any { it.toString() == 
 
 fun String.isValidWheel() = Wheels.entries.any { it.toString() == this }
 
-fun Int.isValidYear() = this in 1885..2030
+fun Short.isValidYear() = this in 1885..2030
 
 fun Int.isValidPrice() = this > 0
 

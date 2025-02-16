@@ -6,26 +6,52 @@ import ru.point.feature.cars.controller.CarsController
 
 fun Application.configureCarsRouting() {
     routing {
-
         get("/brands") {
-            CarsController(call).getAllBrands()
+            CarsController.getAllBrands(call)
         }
 
         get("/models/{brandName}") {
-            CarsController(call).getModelsByBrand()
+            CarsController.getModelsByBrand(call)
         }
 
-
         get("/cars") {
-            CarsController(call).getAdsByQuery()
+            CarsController.getAdsByQuery(call)
         }
 
         get("/cars/{adId}") {
-            CarsController(call).getAdById()
+            CarsController.getAdById(call)
         }
 
         get("/cars/filters") {
-            CarsController(call).getAdsByFilters()
+            CarsController.getAdsByFilters(call)
+        }
+
+        get("/profile/{userId}/ads") {
+            CarsController.getUsersAds(call)
+        }
+
+        post("/profile/{userId}/ads") {
+            CarsController.createNewAd(call)
+        }
+
+        delete("/profile/{userId}/ads/{adId}") {
+            CarsController.deleteAdById(call)
+        }
+
+        patch("/profile/{userId}/ads/{adId}") {
+            CarsController.updateAdById(call)
+        }
+
+        post("/profile/{userId}/favourites/{adId}") {
+            CarsController.addAdToFavourites(call)
+        }
+
+        delete("/profile/{userId}/favourites/{adId}") {
+            CarsController.removeAdFromFavourites(call)
+        }
+
+        get("/profile/{userId}/favourites") {
+            CarsController.getUsersFavourites(call)
         }
     }
 }
