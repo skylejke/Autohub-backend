@@ -1,8 +1,8 @@
-package ru.point.utils.authorization
+package utils.authorization
 
-import ru.point.database.users.UsersTable
+import database.users.UsersTable
 import ru.point.feature.authorization.register.model.RegisterRequest
-import ru.point.utils.ValidationException
+import utils.ValidationException
 
 fun RegisterRequest.validate() {
     val message = when {

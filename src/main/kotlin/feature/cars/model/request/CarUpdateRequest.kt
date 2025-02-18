@@ -1,4 +1,4 @@
-package ru.point.feature.cars.model
+package feature.cars.model.request
 
 import kotlinx.serialization.Serializable
 import ru.point.database.cars.CarUpdateRequestDto

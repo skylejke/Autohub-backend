@@ -2,7 +2,7 @@ package ru.point.database.ads
 
 import ru.point.database.cars.CarRequestDto
 import ru.point.database.cars.asCarRequestDto
-import ru.point.feature.cars.model.AdRequest
+import feature.cars.model.request.AdRequest
 
 data class AdRequestDto(
     val car: CarRequestDto,

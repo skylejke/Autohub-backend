@@ -5,8 +5,8 @@ import org.jetbrains.exposed.sql.statements.UpdateStatement
 import ru.point.database.ads.AdRequestDto
 import ru.point.database.brands.BrandsTable
 import ru.point.database.models.ModelsTable
-import ru.point.utils.cars.BrandNotFoundException
-import ru.point.utils.cars.ModelNotFoundException
+import utils.cars.exceptions.BrandNotFoundException
+import ru.point.utils.cars.exceptions.ModelNotFoundException
 import java.util.*
 
 

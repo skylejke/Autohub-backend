@@ -1,3 +1,3 @@
-package ru.point.utils
+package utils
 
 class ValidationException(message: String) : IllegalArgumentException(message)

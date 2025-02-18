@@ -1,6 +1,6 @@
 package ru.point.database.cars
 
-import ru.point.feature.cars.model.CarRequest
+import feature.cars.model.request.CarRequest
 
 data class CarRequestDto(
     val brand: String,

@@ -15,9 +15,9 @@ import ru.point.database.cars.CarUpdateRequestDto
 import ru.point.database.cars.CarsTable
 import ru.point.database.cars.toOpCondition
 import ru.point.database.models.ModelsTable
-import ru.point.database.users.UsersTable
-import ru.point.utils.cars.CarAdNotFoundException
-import ru.point.utils.cars.validate
+import database.users.UsersTable
+import ru.point.utils.cars.exceptions.CarAdNotFoundException
+import utils.authorization.UserNotFoundException
 import java.time.LocalDate
 import java.util.*
 
@@ -64,8 +64,6 @@ object AdsTable : Table("ads") {
 
     fun insertAd(userId: String, adRequestDto: AdRequestDto) = transaction {
 
-        adRequestDto.validate()
-
         val adId = UUID.randomUUID().toString()
 
         val carId = UUID.randomUUID().toString()
@@ -87,11 +85,8 @@ object AdsTable : Table("ads") {
     }
 
     fun deleteAdById(userId: String, adId: String) = transaction {
-        val adRow = AdsTable
-            .select { (AdsTable.id eq adId) and (AdsTable.userId eq userId) }
-            .singleOrNull() ?: throw CarAdNotFoundException()
-
-        val carId = adRow[carId]
+        val carId = AdsTable.select { (AdsTable.id eq adId) and (AdsTable.userId eq userId) }
+            .singleOrNull()?.get(carId) ?: throw UserNotFoundException()
 
         CarAdsPhotosTable.deleteWhere { carAdId eq adId }
 

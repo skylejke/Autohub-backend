@@ -1,13 +1,14 @@
-package ru.point
+package ru.point.app
 
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import org.jetbrains.exposed.sql.Database
-import ru.point.feature.authorization.login.routing.configureLoginRouting
-import ru.point.feature.authorization.register.routing.configureRegisterRouting
-import ru.point.feature.cars.routing.configureCarsRouting
+import feature.authorization.login.controller.configureLoginController
+import feature.authorization.register.controller.configureRegisterRouting
+import feature.profile.controller.configureProfileController
+import ru.point.feature.cars.routing.configureCarsController
 
 fun main(args: Array<String>) {
     EngineMain.main(args)
@@ -16,10 +17,10 @@ fun main(args: Array<String>) {
 fun Application.module() {
     configureSerialization()
     configureDatabase()
-    configureRouting()
-    configureLoginRouting()
+    configureLoginController()
     configureRegisterRouting()
-    configureCarsRouting()
+    configureCarsController()
+    configureProfileController()
 }
 
 fun configureDatabase() {

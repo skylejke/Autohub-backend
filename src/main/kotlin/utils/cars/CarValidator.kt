@@ -1,10 +1,10 @@
-package ru.point.utils.cars
+package utils.cars
 
-import ru.point.database.ads.AdRequestDto
-import ru.point.utils.ValidationException
+import feature.cars.model.request.AdRequest
 import ru.point.utils.cars.enums.*
+import utils.ValidationException
 
-fun AdRequestDto.validate() {
+fun AdRequest.validate() {
     with(car) {
         val message = when {
             !bodyType.isValidBodyType() -> "Body type is invalid"

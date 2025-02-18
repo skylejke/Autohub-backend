@@ -1,16 +1,16 @@
-package ru.point.database.users
+package database.users
 
 import ru.point.feature.authorization.register.model.RegisterRequest
 
-data class UserDto(
+data class RegisterRequestDto(
     val username: String,
     val email: String,
     val phoneNumber: String,
     val password: String
 )
 
-val RegisterRequest.asUserDto
-    get() = UserDto(
+val RegisterRequest.asRegisterRequestDto
+    get() = RegisterRequestDto(
         username = username,
         email = email,
         phoneNumber = phoneNumber,

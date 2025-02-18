@@ -9,10 +9,10 @@ import ru.point.database.ads.asAdResponseDto
 import ru.point.database.brands.BrandsTable
 import ru.point.database.cars.CarsTable
 import ru.point.database.models.ModelsTable
-import ru.point.database.users.UsersTable
+import database.users.UsersTable
 
 object FavouritesTable : Table("favourites") {
-    private val userId = varchar("user_id", 50).references(UsersTable.id, onDelete = ReferenceOption.CASCADE)
+    val userId = varchar("user_id", 50).references(UsersTable.id, onDelete = ReferenceOption.CASCADE)
     private val adId = varchar("ad_id", 36).references(AdsTable.id, onDelete = ReferenceOption.CASCADE)
 
     override val primaryKey = PrimaryKey(userId, adId)
