@@ -1,7 +1,7 @@
 package utils.authorization
 
 import database.users.UsersTable
-import ru.point.feature.authorization.register.model.RegisterRequest
+import feature.authorization.register.model.RegisterRequest
 import utils.ValidationException
 
 fun RegisterRequest.validate() {

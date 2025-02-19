@@ -1,4 +1,4 @@
-package ru.point.feature.cars.routing
+package feature.cars.controller
 
 import io.ktor.server.application.*
 import io.ktor.server.routing.*

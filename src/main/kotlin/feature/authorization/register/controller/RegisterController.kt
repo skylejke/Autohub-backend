@@ -2,7 +2,7 @@ package feature.authorization.register.controller
 
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
-import ru.point.feature.authorization.register.controller.RegisterService
+import feature.authorization.register.service.RegisterService
 
 fun Application.configureRegisterRouting() {
     routing {

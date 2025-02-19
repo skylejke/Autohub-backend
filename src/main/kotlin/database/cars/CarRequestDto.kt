@@ -1,4 +1,4 @@
-package ru.point.database.cars
+package database.cars
 
 import feature.cars.model.request.CarRequest
 

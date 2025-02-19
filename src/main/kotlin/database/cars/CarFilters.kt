@@ -1,13 +1,13 @@
-package ru.point.database.cars
+package database.cars
 
+import database.brands.BrandsTable
+import database.models.ModelsTable
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.lessEq
 import org.jetbrains.exposed.sql.and
-import ru.point.database.brands.BrandsTable
-import ru.point.database.models.ModelsTable
 
 data class CarFilters(
     val brand: String? = null,

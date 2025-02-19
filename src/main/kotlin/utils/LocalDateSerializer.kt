@@ -1,4 +1,4 @@
-package ru.point.utils
+package utils
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind

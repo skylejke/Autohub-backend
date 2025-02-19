@@ -1,4 +1,4 @@
-package ru.point.database.models
+package database.models
 
 data class ModelResponseDto (
     val id: Int,

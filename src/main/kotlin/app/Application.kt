@@ -1,4 +1,4 @@
-package ru.point.app
+package app
 
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.Database
 import feature.authorization.login.controller.configureLoginController
 import feature.authorization.register.controller.configureRegisterRouting
 import feature.profile.controller.configureProfileController
-import ru.point.feature.cars.routing.configureCarsController
+import feature.cars.controller.configureCarsController
 
 fun main(args: Array<String>) {
     EngineMain.main(args)

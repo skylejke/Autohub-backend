@@ -1,7 +1,7 @@
-package ru.point.database.ads
+package database.ads
 
-import ru.point.database.cars.CarRequestDto
-import ru.point.database.cars.asCarRequestDto
+import database.cars.CarRequestDto
+import database.cars.asCarRequestDto
 import feature.cars.model.request.AdRequest
 
 data class AdRequestDto(

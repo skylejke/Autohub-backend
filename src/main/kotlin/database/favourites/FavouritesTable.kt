@@ -1,18 +1,18 @@
-package ru.point.database.favourites
+package database.favourites
 
 import database.ads.AdsTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
-import ru.point.database.ads.AdResponseDto
-import ru.point.database.ads.asAdResponseDto
-import ru.point.database.brands.BrandsTable
-import ru.point.database.cars.CarsTable
-import ru.point.database.models.ModelsTable
+import database.ads.AdResponseDto
+import database.ads.asAdResponseDto
+import database.brands.BrandsTable
+import database.cars.CarsTable
+import database.models.ModelsTable
 import database.users.UsersTable
 
 object FavouritesTable : Table("favourites") {
-    val userId = varchar("user_id", 50).references(UsersTable.id, onDelete = ReferenceOption.CASCADE)
+    private val userId = varchar("user_id", 50).references(UsersTable.id, onDelete = ReferenceOption.CASCADE)
     private val adId = varchar("ad_id", 36).references(AdsTable.id, onDelete = ReferenceOption.CASCADE)
 
     override val primaryKey = PrimaryKey(userId, adId)

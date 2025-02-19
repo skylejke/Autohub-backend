@@ -1,7 +1,7 @@
 package ru.point.feature.authorization.login.model
 
 import kotlinx.serialization.Serializable
-import ru.point.feature.authorization.model.Token
+import feature.authorization.common.Token
 
 @Serializable
 data class LoginResponse(val token: Token)

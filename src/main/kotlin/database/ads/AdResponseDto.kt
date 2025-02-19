@@ -1,11 +1,10 @@
-package ru.point.database.ads
+package database.ads
 
-import database.ads.AdsTable
 import database.car_ad_photos.CarAdsPhotosTable
+import database.cars.CarResponseDto
+import database.cars.asCarResponseDto
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
-import ru.point.database.cars.CarResponseDto
-import ru.point.database.cars.asCarResponseDto
 import java.time.LocalDate
 
 data class AdResponseDto(

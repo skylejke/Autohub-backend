@@ -1,9 +1,9 @@
-package ru.point.database.tokens
+package database.tokens
 
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.util.UUID
+import java.util.*
 
 object TokensTable : Table("tokens") {
     private val id = TokensTable.varchar("id", 50)

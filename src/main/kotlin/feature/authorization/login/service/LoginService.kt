@@ -5,11 +5,11 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
-import ru.point.database.tokens.TokenDto
-import ru.point.database.tokens.TokensTable
-import ru.point.feature.authorization.login.model.LoginRequest
+import database.tokens.TokenDto
+import database.tokens.TokensTable
+import feature.authorization.login.model.LoginRequest
 import ru.point.feature.authorization.login.model.LoginResponse
-import ru.point.utils.authorization.TokenFactory
+import utils.authorization.TokenFactory
 import utils.authorization.UserNotFoundException
 
 object LoginService {

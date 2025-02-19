@@ -1,11 +1,11 @@
-package ru.point.utils.authorization
+package utils.authorization
 
 import com.nimbusds.jose.JWSAlgorithm
 import com.nimbusds.jose.JWSHeader
 import com.nimbusds.jose.crypto.MACSigner
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
-import ru.point.feature.authorization.model.Token
+import feature.authorization.common.Token
 import java.util.*
 
 object TokenFactory {

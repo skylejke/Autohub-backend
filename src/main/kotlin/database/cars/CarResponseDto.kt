@@ -1,8 +1,8 @@
-package ru.point.database.cars
+package database.cars
 
 import org.jetbrains.exposed.sql.ResultRow
-import ru.point.database.brands.BrandsTable
-import ru.point.database.models.ModelsTable
+import database.brands.BrandsTable
+import database.models.ModelsTable
 
 data class CarResponseDto(
     val id: String,

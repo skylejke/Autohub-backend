@@ -1,4 +1,4 @@
-package ru.point.feature.authorization.register.model
+package feature.authorization.register.model
 
 import kotlinx.serialization.Serializable
 

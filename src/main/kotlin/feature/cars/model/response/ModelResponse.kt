@@ -1,7 +1,7 @@
 package feature.cars.model.response
 
 import kotlinx.serialization.Serializable
-import ru.point.database.models.ModelResponseDto
+import database.models.ModelResponseDto
 
 @Serializable
 data class ModelResponse(

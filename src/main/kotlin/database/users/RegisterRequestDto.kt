@@ -1,6 +1,6 @@
 package database.users
 
-import ru.point.feature.authorization.register.model.RegisterRequest
+import feature.authorization.register.model.RegisterRequest
 
 data class RegisterRequestDto(
     val username: String,

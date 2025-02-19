@@ -11,11 +11,11 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
-import ru.point.database.ads.asAdRequestDto
-import ru.point.database.brands.BrandsTable
-import ru.point.database.cars.asCarFilters
-import ru.point.database.favourites.FavouritesTable
-import ru.point.database.models.ModelsTable
+import database.ads.asAdRequestDto
+import database.brands.BrandsTable
+import database.cars.asCarFilters
+import database.favourites.FavouritesTable
+import database.models.ModelsTable
 import utils.ValidationException
 import utils.cars.validate
 

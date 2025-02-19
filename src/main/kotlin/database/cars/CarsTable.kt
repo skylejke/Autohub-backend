@@ -1,10 +1,10 @@
-package ru.point.database.cars
+package database.cars
 
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.UpdateStatement
-import ru.point.database.ads.AdRequestDto
-import ru.point.database.brands.BrandsTable
-import ru.point.database.models.ModelsTable
+import database.ads.AdRequestDto
+import database.brands.BrandsTable
+import database.models.ModelsTable
 import utils.cars.exceptions.BrandNotFoundException
 import ru.point.utils.cars.exceptions.ModelNotFoundException
 import java.util.*

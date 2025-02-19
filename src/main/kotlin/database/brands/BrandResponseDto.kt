@@ -1,4 +1,4 @@
-package ru.point.database.brands
+package database.brands
 
 data class BrandResponseDto(
     val id: Int,

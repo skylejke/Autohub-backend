@@ -1,4 +1,4 @@
-package ru.point.database.brands
+package database.brands
 
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.selectAll

@@ -1,8 +1,11 @@
-package ru.point.database.models
+package database.models
 
-import org.jetbrains.exposed.sql.*
+import database.brands.BrandsTable
+import org.jetbrains.exposed.sql.ReferenceOption
+import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.lowerCase
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import ru.point.database.brands.BrandsTable
 
 object ModelsTable : Table("models") {
     val id = integer("id").autoIncrement()

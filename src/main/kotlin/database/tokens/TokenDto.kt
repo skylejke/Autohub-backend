@@ -1,6 +1,6 @@
-package ru.point.database.tokens
+package database.tokens
 
-import ru.point.feature.authorization.model.Token
+import feature.authorization.common.Token
 
 @JvmInline
 value class TokenDto(

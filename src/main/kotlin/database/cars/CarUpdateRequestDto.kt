@@ -1,4 +1,4 @@
-package ru.point.database.cars
+package database.cars
 
 data class CarUpdateRequestDto(
     val year: Short? = null,
