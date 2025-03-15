@@ -3,16 +3,17 @@ package database.users
 import feature.authorization.register.model.RegisterRequest
 
 data class RegisterRequestDto(
+    val id: String,
     val username: String,
     val email: String,
     val phoneNumber: String,
     val password: String
 )
 
-val RegisterRequest.asRegisterRequestDto
-    get() = RegisterRequestDto(
-        username = username,
-        email = email,
-        phoneNumber = phoneNumber,
-        password = password
-    )
+fun RegisterRequest.asRegisterRequestDto(userId: String) = RegisterRequestDto(
+    id = userId,
+    username = username,
+    email = email,
+    phoneNumber = phoneNumber,
+    password = password
+)

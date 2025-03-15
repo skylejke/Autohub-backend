@@ -14,14 +14,16 @@ import feature.authorization.register.model.RegisterResponse
 import utils.ValidationException
 import utils.authorization.TokenFactory
 import utils.authorization.validate
+import java.util.UUID
 
 object RegisterService {
     suspend fun register(call: ApplicationCall) {
         val request = call.receive<RegisterRequest>()
         try {
             request.validate()
-            val token = TokenFactory.generate(request.username)
-            UsersTable.insert(request.asRegisterRequestDto)
+            val userId = UUID.randomUUID().toString()
+            val token = TokenFactory.generate(userId = userId)
+            UsersTable.insert(request.asRegisterRequestDto(userId = userId))
             TokensTable.insert(TokenDto(token = token))
             call.respond(HttpStatusCode.Created, RegisterResponse(token = token))
         } catch (e: ValidationException) {

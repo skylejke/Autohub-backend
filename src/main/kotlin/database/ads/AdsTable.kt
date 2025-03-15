@@ -13,7 +13,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.jetbrains.exposed.sql.javatime.date
 import org.jetbrains.exposed.sql.transactions.transaction
-import ru.point.utils.cars.exceptions.CarAdNotFoundException
+import utils.cars.exceptions.CarAdNotFoundException
 import utils.authorization.UserNotFoundException
 import java.time.LocalDate
 import java.util.*
@@ -69,15 +69,15 @@ object AdsTable : Table("ads") {
 
         CarsTable.insertCar(carId, adRequestDto)
 
-        adRequestDto.photos.forEach { photoUrl ->
-            CarAdsPhotosTable.insertPhoto(photoUrl, adId)
-        }
-
         AdsTable.insert {
             it[id] = adId
             it[AdsTable.carId] = carId
             it[AdsTable.userId] = userId
             it[AdsTable.creationDate] = creationDate
+        }
+
+        adRequestDto.photos.forEach { photoBytes ->
+            CarAdsPhotosTable.insertPhoto(photoBytes, adId)
         }
     }
 

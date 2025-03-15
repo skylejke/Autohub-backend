@@ -1,8 +1,8 @@
 package utils.cars
 
 import feature.cars.model.request.AdRequest
-import ru.point.utils.cars.enums.*
 import utils.ValidationException
+import utils.cars.enums.*
 
 fun AdRequest.validate() {
     with(car) {

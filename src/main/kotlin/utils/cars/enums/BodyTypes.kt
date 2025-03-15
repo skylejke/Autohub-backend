@@ -1,4 +1,4 @@
-package ru.point.utils.cars.enums
+package utils.cars.enums
 
 enum class BodyTypes(private val alternativeType: String? = null) {
     SEDAN,

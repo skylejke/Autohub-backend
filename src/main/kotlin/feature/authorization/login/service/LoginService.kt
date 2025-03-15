@@ -8,7 +8,7 @@ import io.ktor.server.response.*
 import database.tokens.TokenDto
 import database.tokens.TokensTable
 import feature.authorization.login.model.LoginRequest
-import ru.point.feature.authorization.login.model.LoginResponse
+import feature.authorization.login.model.LoginResponse
 import utils.authorization.TokenFactory
 import utils.authorization.UserNotFoundException
 
@@ -22,7 +22,7 @@ object LoginService {
                 userDto.password != request.password -> call.respond(HttpStatusCode.Forbidden, "Password is incorrect")
 
                 userDto.password == request.password -> {
-                    val token = TokenFactory.generate(request.username)
+                    val token = TokenFactory.generate(userId = userDto.id)
                     TokensTable.insert(TokenDto(token = token))
                     call.respond(LoginResponse(token = token))
                 }

@@ -1,8 +1,8 @@
 package feature.cars.controller
 
+import feature.cars.service.CarsService
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
-import feature.cars.service.CarsService
 
 fun Application.configureCarsController() {
     routing {
@@ -52,6 +52,10 @@ fun Application.configureCarsController() {
 
         get("/profile/{userId}/favourites") {
             CarsService.getUsersFavourites(call)
+        }
+
+        get("/photos/{photoId}") {
+            CarsService.getPhoto(call)
         }
     }
 }

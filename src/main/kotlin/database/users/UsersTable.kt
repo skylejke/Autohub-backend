@@ -5,7 +5,6 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.statements.UpdateStatement
 import org.jetbrains.exposed.sql.transactions.transaction
 import utils.authorization.UserNotFoundException
-import java.util.*
 
 object UsersTable : Table("users") {
     val id = varchar("id", 50)
@@ -16,7 +15,7 @@ object UsersTable : Table("users") {
 
     fun insert(registerRequestDto: RegisterRequestDto) = transaction {
         insert {
-            it[id] = UUID.randomUUID().toString()
+            it[id] = registerRequestDto.id
             it[username] = registerRequestDto.username
             it[email] = registerRequestDto.email
             it[phoneNumber] = registerRequestDto.phoneNumber
@@ -24,9 +23,10 @@ object UsersTable : Table("users") {
         }
     }
 
-    fun getUserByUsername(userName: String): RegisterRequestDto = transaction {
+    fun getUserByUsername(userName: String): UsersDataResponseDto = transaction {
         val user = UsersTable.select { username eq userName }.singleOrNull() ?: throw UserNotFoundException()
-        RegisterRequestDto(
+        UsersDataResponseDto(
+            id = user[UsersTable.id],
             username = user[username],
             email = user[email],
             phoneNumber = user[phoneNumber],
@@ -34,9 +34,10 @@ object UsersTable : Table("users") {
         )
     }
 
-    fun getAllUsers(): List<RegisterRequestDto> = transaction {
+    fun getAllUsers(): List<UsersDataResponseDto> = transaction {
         UsersTable.selectAll().map {
-            RegisterRequestDto(
+            UsersDataResponseDto(
+                id = it[UsersTable.id],
                 username = it[username],
                 email = it[email],
                 phoneNumber = it[phoneNumber],
@@ -48,9 +49,11 @@ object UsersTable : Table("users") {
     fun getUserById(id: String): UsersDataResponseDto = transaction {
         val user = UsersTable.select { UsersTable.id eq id }.singleOrNull() ?: throw UserNotFoundException()
         UsersDataResponseDto(
+            id = user[UsersTable.id],
             username = user[username],
             email = user[email],
             phoneNumber = user[phoneNumber],
+            password = user[password]
         )
     }
 
@@ -60,8 +63,13 @@ object UsersTable : Table("users") {
                 username?.let { builder[UsersTable.username] = it }
                 email?.let { builder[UsersTable.email] = it }
                 phoneNumber?.let { builder[UsersTable.phoneNumber] = it }
-                password?.let { builder[UsersTable.password] = it }
             }
+        }
+    }
+
+    fun updateUsersPassword(userId: String, updateUsersPasswordRequestDto: UpdateUsersPasswordRequestDto) = transaction {
+        updateById(userId) { builder ->
+            updateUsersPasswordRequestDto.password.let { builder[password] = it }
         }
     }
 

@@ -22,6 +22,7 @@ val ResultRow.asAdResponseDto
         userId = get(AdsTable.userId),
         car = asCarResponseDto,
         photos = CarAdsPhotosTable
+            .slice(CarAdsPhotosTable.id)
             .select { CarAdsPhotosTable.carAdId eq get(AdsTable.id) }
-            .map { photoRow -> photoRow[CarAdsPhotosTable.uri] }
+            .map { it[CarAdsPhotosTable.id] }
     )

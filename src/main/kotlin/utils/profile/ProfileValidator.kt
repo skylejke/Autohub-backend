@@ -1,20 +1,20 @@
-package utils.authorization
+package utils.profile
 
 import database.users.UsersTable
-import feature.authorization.register.model.RegisterRequest
+import feature.profile.model.UpdateUsersDataRequest
+import feature.profile.model.UpdateUsersPasswordRequest
 import utils.ValidationException
 import utils.common.isValidEmail
 import utils.common.isValidPassword
 import utils.common.isValidPhoneNumber
 import utils.common.isValidUserName
 
-fun RegisterRequest.validate() {
+fun UpdateUsersDataRequest.validate() {
     val users = UsersTable.getAllUsers()
     val message = when {
-        !this.username.isValidUserName() -> "Username is invalid"
-        !this.password.isValidPassword() -> "Password is invalid"
-        !this.email.isValidEmail() -> "Email is invalid"
-        !this.phoneNumber.isValidPhoneNumber() -> "Phone number is invalid"
+        this.username?.isValidUserName() == false -> "Username is invalid"
+        this.email?.isValidEmail() == false -> "Email is invalid"
+        this.phoneNumber?.isValidPhoneNumber() == false -> "Phone number is invalid"
 
         users.map { it.username }
             .contains(this.username) -> "This username is already taken"
@@ -30,3 +30,10 @@ fun RegisterRequest.validate() {
     message?.let { throw ValidationException(it) }
 }
 
+fun UpdateUsersPasswordRequest.validate() {
+    val message = when {
+        !this.password.isValidPassword() -> "Password is invalid"
+        else -> null
+    }
+    message?.let { throw ValidationException(it) }
+}

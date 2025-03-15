@@ -1,4 +1,4 @@
-package ru.point.utils.cars.enums
+package utils.cars.enums
 
 enum class Drivetrains {
     AWD,

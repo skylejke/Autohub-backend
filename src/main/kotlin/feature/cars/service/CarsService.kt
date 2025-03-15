@@ -1,21 +1,29 @@
 package feature.cars.service
 
 import database.ads.AdsTable
+import database.ads.asAdRequestDto
+import database.brands.BrandsTable
+import database.car_ad_photos.CarAdsPhotosTable
+import database.cars.asCarFilters
+import database.favourites.FavouritesTable
+import database.models.ModelsTable
 import feature.cars.model.request.AdRequest
+import feature.cars.model.request.CarRequest
 import feature.cars.model.request.CarUpdateRequest
 import feature.cars.model.request.asCarUpdateRequestDto
 import feature.cars.model.response.asAdResponse
 import feature.cars.model.response.asBrandResponse
 import feature.cars.model.response.asModelResponse
 import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
-import database.ads.asAdRequestDto
-import database.brands.BrandsTable
-import database.cars.asCarFilters
-import database.favourites.FavouritesTable
-import database.models.ModelsTable
+import io.ktor.utils.io.*
+import kotlinx.io.readByteArray
+import kotlinx.serialization.json.Json
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import utils.ValidationException
 import utils.cars.validate
 
@@ -72,20 +80,48 @@ object CarsService {
             "User id is required"
         )
 
-        val request = call.receive<AdRequest>()
+        var carJson: String? = null
+        val photoBytesList = mutableListOf<ByteArray>()
 
-        try {
-            request.validate()
-        } catch (e: ValidationException) {
-            call.respond(HttpStatusCode.BadRequest, e.message ?: "")
+        call.receiveMultipart().forEachPart { part ->
+            when (part) {
+                is PartData.FormItem -> {
+                    if (part.name == "car") {
+                        carJson = part.value
+                    }
+                }
+
+                is PartData.FileItem -> {
+                    if (part.name == "photo") {
+                        photoBytesList.add(part.provider().readRemaining().readByteArray())
+                    }
+                }
+
+                else -> {
+                    call.respond(HttpStatusCode.BadRequest, "Wrong part data")
+                }
+            }
+            part.dispose()
         }
 
+        if (carJson == null) {
+            return call.respond(HttpStatusCode.BadRequest, "Missing car data")
+        }
+
+        val carRequest: CarRequest = try {
+            Json.decodeFromString(carJson!!)
+        } catch (e: Exception) {
+            return call.respond(HttpStatusCode.BadRequest, "Invalid car data format: ${e.localizedMessage}")
+        }
+
+        val adRequest = AdRequest(car = carRequest, photos = photoBytesList)
+
         try {
-            AdsTable.insertAd(
-                userId = userId,
-                adRequestDto = request.asAdRequestDto
-            )
+            adRequest.validate()
+            AdsTable.insertAd(userId, adRequest.asAdRequestDto)
             call.respond(HttpStatusCode.Created, "Successfully created new car ad")
+        } catch (e: ValidationException) {
+            return call.respond(HttpStatusCode.BadRequest, e.message ?: "Validation error")
         } catch (e: Exception) {
             call.respond(HttpStatusCode.BadRequest, "Can't create ad: ${e.localizedMessage}")
         }
@@ -171,5 +207,23 @@ object CarsService {
         )
         val adResponses = FavouritesTable.getFavoriteAds(userId).map { it.asAdResponse }
         call.respond(HttpStatusCode.OK, adResponses)
+    }
+
+    suspend fun getPhoto(call: ApplicationCall) {
+        val photoId = call.parameters["photoId"]
+            ?: return call.respond(HttpStatusCode.BadRequest, "Photo id is required")
+
+        val photoBytes = transaction {
+            CarAdsPhotosTable
+                .select { CarAdsPhotosTable.id eq photoId }
+                .singleOrNull()
+                ?.get(CarAdsPhotosTable.photo)
+        }
+
+        if (photoBytes == null) {
+            call.respond(HttpStatusCode.NotFound, "Photo not found")
+        } else {
+            call.respondBytes(photoBytes, ContentType.Image.JPEG)
+        }
     }
 }

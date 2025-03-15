@@ -2,14 +2,18 @@ package feature.profile.service
 
 import database.users.UsersTable
 import database.users.asUpdateUsersDataRequestDto
+import database.users.asUpdateUsersPasswordRequestDto
 import feature.profile.model.UpdateUsersDataRequest
+import feature.profile.model.UpdateUsersPasswordRequest
 import feature.profile.model.asUsersDataResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
+import utils.ValidationException
 import utils.authorization.NoUserIdException
 import utils.authorization.UserNotFoundException
+import utils.profile.validate
 
 object ProfileService {
     suspend fun getUsersData(call: ApplicationCall) {
@@ -26,8 +30,26 @@ object ProfileService {
     suspend fun updateUsersData(call: ApplicationCall) {
         try {
             val request = call.receive<UpdateUsersDataRequest>()
+            request.validate()
             UsersTable.updateUsersData(getUsersId(call), request.asUpdateUsersDataRequestDto)
             call.respond(HttpStatusCode.OK, "Successfully updated users data")
+        } catch (e: ValidationException) {
+            call.respond(HttpStatusCode.BadRequest, e.message ?: "")
+        } catch (e: NoUserIdException) {
+            call.respond(HttpStatusCode.BadRequest, e.localizedMessage)
+        } catch (e: UserNotFoundException) {
+            call.respond(HttpStatusCode.NotFound, "User not found: ${e.message}")
+        }
+    }
+
+    suspend fun updateUserPassword(call: ApplicationCall) {
+        try {
+            val request = call.receive<UpdateUsersPasswordRequest>()
+            request.validate()
+            UsersTable.updateUsersPassword(getUsersId(call), request.asUpdateUsersPasswordRequestDto)
+            call.respond(HttpStatusCode.OK, "Successfully updated users password")
+        } catch (e: ValidationException) {
+            call.respond(HttpStatusCode.BadRequest, e.message ?: "")
         } catch (e: NoUserIdException) {
             call.respond(HttpStatusCode.BadRequest, e.localizedMessage)
         } catch (e: UserNotFoundException) {

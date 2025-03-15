@@ -17,9 +17,9 @@ object TokenFactory {
 
     private val jwsAlgorithm = JWSAlgorithm.HS256
 
-    fun generate(username: String): Token {
+    fun generate(userId: String): Token {
         val claimsSet = JWTClaimsSet.Builder()
-            .subject(username)
+            .subject(userId)
             .expirationTime(Date(System.currentTimeMillis() + EXPIRATION_TIME))
             .build()
 

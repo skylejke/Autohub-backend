@@ -14,6 +14,10 @@ fun Application.configureProfileController() {
             ProfileService.updateUsersData(call)
         }
 
+        patch("/profile/{userId}/updatePassword") {
+            ProfileService.updateUserPassword(call)
+        }
+
         delete("/profile/{userId}") {
             ProfileService.deleteUser(call)
         }

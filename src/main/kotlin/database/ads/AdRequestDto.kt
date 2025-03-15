@@ -6,7 +6,7 @@ import feature.cars.model.request.AdRequest
 
 data class AdRequestDto(
     val car: CarRequestDto,
-    val photos: List<String>
+    val photos: List<ByteArray>
 )
 
 val AdRequest.asAdRequestDto

@@ -6,7 +6,7 @@ import database.ads.AdRequestDto
 import database.brands.BrandsTable
 import database.models.ModelsTable
 import utils.cars.exceptions.BrandNotFoundException
-import ru.point.utils.cars.exceptions.ModelNotFoundException
+import utils.cars.exceptions.ModelNotFoundException
 import java.util.*
 
 

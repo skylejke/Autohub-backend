@@ -7,5 +7,4 @@ data class UpdateUsersDataRequest(
     val username: String? = null,
     val email: String? = null,
     val phoneNumber: String? = null,
-    val password: String? = null
 )
