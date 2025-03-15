@@ -4,8 +4,8 @@ import database.ads.AdsTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
-import database.ads.AdResponseDto
-import database.ads.asAdResponseDto
+import database.ads.model.AdResponseDto
+import database.ads.model.asAdResponseDto
 import database.brands.BrandsTable
 import database.cars.CarsTable
 import database.models.ModelsTable

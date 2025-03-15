@@ -5,10 +5,10 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import org.jetbrains.exposed.exceptions.ExposedSQLException
-import database.tokens.TokenDto
+import database.tokens.model.TokenDto
 import database.tokens.TokensTable
 import database.users.UsersTable
-import database.users.asRegisterRequestDto
+import database.users.model.asRegisterRequestDto
 import feature.authorization.register.model.RegisterRequest
 import feature.authorization.register.model.RegisterResponse
 import utils.ValidationException

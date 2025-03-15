@@ -1,7 +1,8 @@
-package database.cars
+package database.cars.model
 
 import org.jetbrains.exposed.sql.ResultRow
 import database.brands.BrandsTable
+import database.cars.CarsTable
 import database.models.ModelsTable
 
 data class CarResponseDto(

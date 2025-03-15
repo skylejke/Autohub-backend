@@ -1,8 +1,9 @@
-package database.ads
+package database.ads.model
 
+import database.ads.AdsTable
 import database.car_ad_photos.CarAdsPhotosTable
-import database.cars.CarResponseDto
-import database.cars.asCarResponseDto
+import database.cars.model.CarResponseDto
+import database.cars.model.asCarResponseDto
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import java.time.LocalDate

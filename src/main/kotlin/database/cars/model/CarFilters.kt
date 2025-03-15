@@ -1,6 +1,7 @@
-package database.cars
+package database.cars.model
 
 import database.brands.BrandsTable
+import database.cars.CarsTable
 import database.models.ModelsTable
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.Op

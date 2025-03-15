@@ -1,5 +1,6 @@
 package database.tokens
 
+import database.tokens.model.TokenDto
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction

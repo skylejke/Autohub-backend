@@ -1,8 +1,8 @@
 package feature.profile.service
 
 import database.users.UsersTable
-import database.users.asUpdateUsersDataRequestDto
-import database.users.asUpdateUsersPasswordRequestDto
+import database.users.model.asUpdateUsersDataRequestDto
+import database.users.model.asUpdateUsersPasswordRequestDto
 import feature.profile.model.UpdateUsersDataRequest
 import feature.profile.model.UpdateUsersPasswordRequest
 import feature.profile.model.asUsersDataResponse

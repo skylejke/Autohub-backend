@@ -1,7 +1,7 @@
-package database.ads
+package database.ads.model
 
-import database.cars.CarRequestDto
-import database.cars.asCarRequestDto
+import database.cars.model.CarRequestDto
+import database.cars.model.asCarRequestDto
 import feature.cars.model.request.AdRequest
 
 data class AdRequestDto(

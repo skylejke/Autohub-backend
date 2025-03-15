@@ -1,6 +1,7 @@
 package database.models
 
 import database.brands.BrandsTable
+import database.models.model.ModelResponseDto
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.lowerCase

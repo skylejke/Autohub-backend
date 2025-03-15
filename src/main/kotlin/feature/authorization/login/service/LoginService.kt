@@ -5,7 +5,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
-import database.tokens.TokenDto
+import database.tokens.model.TokenDto
 import database.tokens.TokensTable
 import feature.authorization.login.model.LoginRequest
 import feature.authorization.login.model.LoginResponse

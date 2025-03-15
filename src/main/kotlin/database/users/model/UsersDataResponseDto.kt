@@ -1,4 +1,4 @@
-package database.users
+package database.users.model
 
 data class UsersDataResponseDto(
     val id: String,

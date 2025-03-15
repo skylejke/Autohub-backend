@@ -1,4 +1,4 @@
-package database.cars
+package database.cars.model
 
 import feature.cars.model.request.CarRequest
 

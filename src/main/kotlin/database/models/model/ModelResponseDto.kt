@@ -1,4 +1,4 @@
-package database.models
+package database.models.model
 
 data class ModelResponseDto (
     val id: Int,

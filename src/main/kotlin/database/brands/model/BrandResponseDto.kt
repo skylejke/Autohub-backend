@@ -1,4 +1,4 @@
-package database.brands
+package database.brands.model
 
 data class BrandResponseDto(
     val id: Int,

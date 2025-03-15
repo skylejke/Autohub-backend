@@ -2,7 +2,7 @@ package database.cars
 
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.UpdateStatement
-import database.ads.AdRequestDto
+import database.ads.model.AdRequestDto
 import database.brands.BrandsTable
 import database.models.ModelsTable
 import utils.cars.exceptions.BrandNotFoundException

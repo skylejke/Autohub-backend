@@ -1,4 +1,4 @@
-package database.users
+package database.users.model
 
 import feature.profile.model.UpdateUsersPasswordRequest
 

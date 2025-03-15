@@ -1,7 +1,7 @@
 package feature.cars.model.request
 
 import kotlinx.serialization.Serializable
-import database.cars.CarUpdateRequestDto
+import database.cars.model.CarUpdateRequestDto
 
 @Serializable
 data class CarUpdateRequest(

@@ -1,4 +1,4 @@
-package database.cars
+package database.cars.model
 
 data class CarUpdateRequestDto(
     val year: Short? = null,

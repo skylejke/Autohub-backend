@@ -1,16 +1,13 @@
 package feature.cars.service
 
 import database.ads.AdsTable
-import database.ads.asAdRequestDto
+import database.ads.model.asAdRequestDto
 import database.brands.BrandsTable
 import database.car_ad_photos.CarAdsPhotosTable
-import database.cars.asCarFilters
+import database.cars.model.asCarFilters
 import database.favourites.FavouritesTable
 import database.models.ModelsTable
-import feature.cars.model.request.AdRequest
-import feature.cars.model.request.CarRequest
-import feature.cars.model.request.CarUpdateRequest
-import feature.cars.model.request.asCarUpdateRequestDto
+import feature.cars.model.request.*
 import feature.cars.model.response.asAdResponse
 import feature.cars.model.response.asBrandResponse
 import feature.cars.model.response.asModelResponse
@@ -149,15 +146,57 @@ object CarsService {
             HttpStatusCode.BadRequest,
             "User id is required"
         )
-        val adId = call.parameters["adId"]?.lowercase() ?: return call.respond(
-            HttpStatusCode.BadRequest,
-            "Ad id is required"
+        val adId =
+            call.parameters["adId"]?.lowercase() ?: return call.respond(HttpStatusCode.BadRequest, "Ad id is required")
+
+        var carJson: String? = null
+        val newPhotoBytesList = mutableListOf<ByteArray>()
+        var removePhotoIds: List<String> = emptyList()
+
+        call.receiveMultipart().forEachPart { part ->
+            when (part) {
+                is PartData.FormItem -> {
+                    when (part.name) {
+                        "car" -> carJson = part.value
+                        "removePhotoIds" -> {
+                            removePhotoIds = try {
+                                Json.decodeFromString(part.value)
+                            } catch (e: Exception) {
+                                part.value.split(",").map { it.trim() }
+                            }
+                        }
+                    }
+                }
+
+                is PartData.FileItem -> {
+                    if (part.name == "newPhotos") {
+                        newPhotoBytesList.add(part.provider().readRemaining().readByteArray())
+                    }
+                }
+
+                else -> {
+                    call.respond(HttpStatusCode.BadRequest, "Wrong part data")
+                }
+            }
+            part.dispose()
+        }
+
+        val carUpdateRequest: CarUpdateRequest? = carJson?.let {
+            try {
+                Json.decodeFromString<CarUpdateRequest>(it)
+            } catch (e: Exception) {
+                return call.respond(HttpStatusCode.BadRequest, "Invalid car update data: ${e.localizedMessage}")
+            }
+        }
+
+        val adUpdateRequest = AdUpdateRequest(
+            car = carUpdateRequest,
+            newPhotos = newPhotoBytesList.ifEmpty { null },
+            removePhotosIds = removePhotoIds.ifEmpty { null }
         )
 
-        val request = call.receive<CarUpdateRequest>()
-
         try {
-            AdsTable.updateAdById(userId, adId, request.asCarUpdateRequestDto)
+            AdsTable.updateAdById(userId, adId, adUpdateRequest.asAdUpdateRequestDto)
             call.respond(HttpStatusCode.OK, "Successfully updated car ad")
         } catch (e: Exception) {
             call.respond(HttpStatusCode.BadRequest, "Can't update ad: ${e.localizedMessage}")

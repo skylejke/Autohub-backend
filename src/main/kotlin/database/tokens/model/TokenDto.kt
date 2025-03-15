@@ -1,4 +1,4 @@
-package database.tokens
+package database.tokens.model
 
 import feature.authorization.common.Token
 

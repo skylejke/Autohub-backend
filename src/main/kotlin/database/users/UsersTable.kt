@@ -1,5 +1,9 @@
 package database.users
 
+import database.users.model.RegisterRequestDto
+import database.users.model.UpdateUsersDataRequestDto
+import database.users.model.UpdateUsersPasswordRequestDto
+import database.users.model.UsersDataResponseDto
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.statements.UpdateStatement

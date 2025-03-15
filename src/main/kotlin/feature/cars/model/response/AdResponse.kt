@@ -1,7 +1,7 @@
 package feature.cars.model.response
 
 import kotlinx.serialization.Serializable
-import database.ads.AdResponseDto
+import database.ads.model.AdResponseDto
 import utils.LocalDateSerializer
 import java.time.LocalDate
 

@@ -1,6 +1,6 @@
 package feature.profile.model
 
-import database.users.UsersDataResponseDto
+import database.users.model.UsersDataResponseDto
 import kotlinx.serialization.Serializable
 
 @Serializable
