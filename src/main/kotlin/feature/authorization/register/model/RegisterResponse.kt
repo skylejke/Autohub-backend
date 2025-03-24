@@ -4,4 +4,7 @@ import kotlinx.serialization.Serializable
 import feature.authorization.common.Token
 
 @Serializable
-data class RegisterResponse(val token: Token)
+data class RegisterResponse(
+    val token: Token? = null,
+    val message: String? = null
+)

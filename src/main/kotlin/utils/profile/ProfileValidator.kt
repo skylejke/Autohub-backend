@@ -1,8 +1,8 @@
 package utils.profile
 
 import database.users.UsersTable
-import feature.profile.model.UpdateUsersDataRequest
-import feature.profile.model.UpdateUsersPasswordRequest
+import feature.profile.model.request.UpdateUsersDataRequest
+import feature.profile.model.request.UpdateUsersPasswordRequest
 import utils.ValidationException
 import utils.common.isValidEmail
 import utils.common.isValidPassword
@@ -32,7 +32,9 @@ fun UpdateUsersDataRequest.validate() {
 
 fun UpdateUsersPasswordRequest.validate() {
     val message = when {
-        !this.password.isValidPassword() -> "Password is invalid"
+        !this.newPassword.isValidPassword() -> "New password is invalid"
+        this.newPassword != this.confirmNewPassword -> "New password and confirmation do not match"
+        this.oldPassword.isBlank() -> "Old password must be provided"
         else -> null
     }
     message?.let { throw ValidationException(it) }

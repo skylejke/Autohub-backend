@@ -19,7 +19,10 @@ object LoginService {
         try {
             val userDto = UsersTable.getUserByUsername(request.username)
             when {
-                userDto.password != request.password -> call.respond(HttpStatusCode.Forbidden, "Password is incorrect")
+                userDto.password != request.password -> call.respond(
+                    HttpStatusCode.Forbidden,
+                    LoginResponse(message = "Password is incorrect")
+                )
 
                 userDto.password == request.password -> {
                     val token = TokenFactory.generate(userId = userDto.id)
@@ -27,10 +30,10 @@ object LoginService {
                     call.respond(LoginResponse(token = token))
                 }
 
-                else -> call.respond(HttpStatusCode.BadRequest, "Something went wrong")
+                else -> call.respond(HttpStatusCode.BadRequest, LoginResponse(message = "Something went wrong"))
             }
         } catch (e: UserNotFoundException) {
-            call.respond(HttpStatusCode.BadRequest, e.localizedMessage)
+            call.respond(HttpStatusCode.NotFound, LoginResponse(message = e.localizedMessage))
         }
     }
 }

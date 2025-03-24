@@ -1,4 +1,4 @@
-package feature.profile.model
+package feature.profile.model.request
 
 import kotlinx.serialization.Serializable
 

@@ -1,6 +1,6 @@
 package database.users.model
 
-import feature.profile.model.UpdateUsersDataRequest
+import feature.profile.model.request.UpdateUsersDataRequest
 
 data class UpdateUsersDataRequestDto(
     val username: String? = null,

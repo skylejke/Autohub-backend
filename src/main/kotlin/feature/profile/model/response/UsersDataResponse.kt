@@ -1,4 +1,4 @@
-package feature.profile.model
+package feature.profile.model.response
 
 import database.users.model.UsersDataResponseDto
 import kotlinx.serialization.Serializable
@@ -8,6 +8,7 @@ data class UsersDataResponse(
     val username: String,
     val email: String,
     val phoneNumber: String,
+    val password: String,
 )
 
 val UsersDataResponseDto.asUsersDataResponse
@@ -15,4 +16,5 @@ val UsersDataResponseDto.asUsersDataResponse
         username = username,
         email = email,
         phoneNumber = phoneNumber,
+        password = password
     )

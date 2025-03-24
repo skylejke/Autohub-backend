@@ -7,8 +7,11 @@ import feature.profile.controller.configureProfileController
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.request.*
 import org.jetbrains.exposed.sql.Database
+import org.slf4j.event.Level
 
 fun main(args: Array<String>) {
     EngineMain.main(args)
@@ -16,6 +19,7 @@ fun main(args: Array<String>) {
 
 fun Application.module() {
     configureSerialization()
+    configureMonitoring()
     configureDatabase()
     configureLoginController()
     configureRegisterRouting()
@@ -38,3 +42,9 @@ fun Application.configureSerialization() {
     }
 }
 
+fun Application.configureMonitoring() {
+    install(CallLogging) {
+        level = Level.INFO
+        filter { call -> call.request.path().startsWith("/") }
+    }
+}

@@ -9,24 +9,32 @@ import utils.common.isValidPhoneNumber
 import utils.common.isValidUserName
 
 fun RegisterRequest.validate() {
-    val users = UsersTable.getAllUsers()
     val message = when {
         !this.username.isValidUserName() -> "Username is invalid"
         !this.password.isValidPassword() -> "Password is invalid"
         !this.email.isValidEmail() -> "Email is invalid"
         !this.phoneNumber.isValidPhoneNumber() -> "Phone number is invalid"
-
-        users.map { it.username }
-            .contains(this.username) -> "This username is already taken"
-
-        users.map { it.email }
-            .contains(this.email) -> "This email is already taken"
-
-        users.map { it.phoneNumber }
-            .contains(this.phoneNumber) -> "This phone number is already taken"
-
         else -> null
     }
     message?.let { throw ValidationException(it) }
 }
 
+fun RegisterRequest.checkDataAvailability() {
+    val users = UsersTable.getAllUsers()
+    when {
+        users.map { it.username }
+            .contains(this.username) -> throw UserNameIsTakenException()
+
+        users.map { it.email }
+            .contains(this.email) -> throw EmailIsTakenException()
+
+        users.map { it.phoneNumber }
+            .contains(this.phoneNumber) -> throw PhoneNumberIsTakenException()
+    }
+}
+
+class UserNameIsTakenException : IllegalArgumentException("Username is taken")
+
+class EmailIsTakenException : IllegalArgumentException("Email is taken")
+
+class PhoneNumberIsTakenException : IllegalArgumentException("Phone number is taken")

@@ -24,6 +24,7 @@ repositories {
 dependencies {
     val exposedVersion = "0.43.0"
 
+    implementation("io.ktor:ktor-server-call-logging")
     implementation("com.nimbusds:nimbus-jose-jwt:10.0.1")
     implementation("io.ktor:ktor-server-core")
     implementation("io.ktor:ktor-server-content-negotiation")
