@@ -3,6 +3,7 @@ package feature.profile.service
 import database.users.UsersTable
 import database.users.model.asUpdateUsersDataRequestDto
 import database.users.model.asUpdateUsersPasswordRequestDto
+import feature.authorization.register.model.RegisterResponse
 import feature.profile.model.request.UpdateUsersDataRequest
 import feature.profile.model.response.UpdateUserPasswordResponse
 import feature.profile.model.request.UpdateUsersPasswordRequest
@@ -15,6 +16,7 @@ import io.ktor.server.response.*
 import utils.ValidationException
 import utils.authorization.NoUserIdException
 import utils.authorization.UserNotFoundException
+import utils.common.checkDataAvailability
 import utils.profile.validate
 
 object ProfileService {
@@ -32,9 +34,19 @@ object ProfileService {
     suspend fun updateUsersData(call: ApplicationCall) {
         try {
             val request = call.receive<UpdateUsersDataRequest>()
+
             request.validate()
+
+            checkDataAvailability(
+                username = request.username,
+                email = request.email,
+                phoneNumber = request.phoneNumber
+            )
+
             UsersTable.updateUsersData(getUsersId(call), request.asUpdateUsersDataRequestDto)
             call.respond(HttpStatusCode.OK, UpdateUserDataResponse("Successfully updated users data"))
+        } catch (e: IllegalArgumentException) {
+            call.respond(HttpStatusCode.Conflict, RegisterResponse(message = e.localizedMessage))
         } catch (e: ValidationException) {
             call.respond(HttpStatusCode.BadRequest, UpdateUserDataResponse(e.message ?: ""))
         } catch (e: NoUserIdException) {

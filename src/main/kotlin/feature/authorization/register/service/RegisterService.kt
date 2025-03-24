@@ -13,16 +13,23 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import utils.ValidationException
 import utils.authorization.TokenFactory
-import utils.authorization.checkDataAvailability
 import utils.authorization.validate
+import utils.common.checkDataAvailability
 import java.util.*
 
 object RegisterService {
     suspend fun register(call: ApplicationCall) {
         val request = call.receive<RegisterRequest>()
         try {
+
             request.validate()
-            request.checkDataAvailability()
+
+            checkDataAvailability(
+                username = request.username,
+                email = request.email,
+                phoneNumber = request.phoneNumber
+            )
+
             val userId = UUID.randomUUID().toString()
             val token = TokenFactory.generate(userId = userId)
             UsersTable.insert(request.asRegisterRequestDto(userId = userId))

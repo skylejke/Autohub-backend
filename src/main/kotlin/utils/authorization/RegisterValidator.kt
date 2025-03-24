@@ -1,6 +1,5 @@
 package utils.authorization
 
-import database.users.UsersTable
 import feature.authorization.register.model.RegisterRequest
 import utils.ValidationException
 import utils.common.isValidEmail
@@ -19,19 +18,6 @@ fun RegisterRequest.validate() {
     message?.let { throw ValidationException(it) }
 }
 
-fun RegisterRequest.checkDataAvailability() {
-    val users = UsersTable.getAllUsers()
-    when {
-        users.map { it.username }
-            .contains(this.username) -> throw UserNameIsTakenException()
-
-        users.map { it.email }
-            .contains(this.email) -> throw EmailIsTakenException()
-
-        users.map { it.phoneNumber }
-            .contains(this.phoneNumber) -> throw PhoneNumberIsTakenException()
-    }
-}
 
 class UserNameIsTakenException : IllegalArgumentException("Username is taken")
 
