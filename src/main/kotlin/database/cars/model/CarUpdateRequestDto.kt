@@ -1,6 +1,8 @@
 package database.cars.model
 
 data class CarUpdateRequestDto(
+    val brand: String? = null,
+    val model: String? = null,
     val year: Short? = null,
     val price: Int? = null,
     val mileage: Int? = null,

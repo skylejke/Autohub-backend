@@ -1,3 +1,3 @@
 package utils.authorization
 
-class UserNotFoundException() : IllegalArgumentException("User does not exist")
+class UserNotFoundException : IllegalArgumentException("User does not exist")

@@ -5,6 +5,8 @@ import database.cars.model.CarUpdateRequestDto
 
 @Serializable
 data class CarUpdateRequest(
+    val brand: String? = null,
+    val model: String? = null,
     val year: Short? = null,
     val price: Int? = null,
     val mileage: Int? = null,
@@ -25,6 +27,8 @@ data class CarUpdateRequest(
 
 val CarUpdateRequest.asCarUpdateRequestDto
     get() = CarUpdateRequestDto(
+        brand = brand,
+        model = model,
         year = year,
         price = price,
         mileage = mileage,

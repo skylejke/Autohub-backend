@@ -57,5 +57,17 @@ fun Application.configureCarsController() {
         get("/photos/{photoId}") {
             CarsService.getPhoto(call)
         }
+
+        post("profile/{userId}/comparisons/{adId}") {
+            CarsService.insertAdToComparisons(call)
+        }
+
+        delete("profile/{userId}/comparisons/{adId}") {
+            CarsService.removeAdFromComparisons(call)
+        }
+
+        get("profile/{userId}/comparisons") {
+            CarsService.getUsersComparisons(call)
+        }
     }
 }

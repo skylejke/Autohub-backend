@@ -7,6 +7,7 @@ import feature.authorization.register.model.RegisterResponse
 import feature.profile.model.request.UpdateUsersDataRequest
 import feature.profile.model.response.UpdateUserPasswordResponse
 import feature.profile.model.request.UpdateUsersPasswordRequest
+import feature.profile.model.response.DeleteUserResponse
 import feature.profile.model.response.UpdateUserDataResponse
 import feature.profile.model.response.asUsersDataResponse
 import io.ktor.http.*
@@ -79,11 +80,11 @@ object ProfileService {
     suspend fun deleteUser(call: ApplicationCall) {
         try {
             UsersTable.deleteUserById(getUsersId(call))
-            call.respond(HttpStatusCode.OK, "Successfully deleted user")
+            call.respond(HttpStatusCode.OK, DeleteUserResponse("Successfully deleted user"))
         } catch (e: NoUserIdException) {
-            call.respond(HttpStatusCode.BadRequest, e.localizedMessage)
+            call.respond(HttpStatusCode.BadRequest, DeleteUserResponse(e.localizedMessage))
         } catch (e: UserNotFoundException) {
-            call.respond(HttpStatusCode.NotFound, "User not found: ${e.message}")
+            call.respond(HttpStatusCode.NotFound, DeleteUserResponse(e.localizedMessage))
         }
     }
 

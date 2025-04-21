@@ -78,7 +78,10 @@ object UsersTable : Table("users") {
     }
 
     fun deleteUserById(userId: String) = transaction {
-        UsersTable.deleteWhere { id eq userId }
+        val deletedRows = deleteWhere { id eq userId } // вернёт Int
+        if (deletedRows == 0) {
+            throw UserNotFoundException()
+        }
     }
 
 

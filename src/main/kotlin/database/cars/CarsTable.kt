@@ -12,7 +12,7 @@ import java.util.*
 
 object CarsTable : Table("cars") {
     val id = varchar("id", 50).clientDefault { UUID.randomUUID().toString() }
-    private val brandId = integer("brand_id").references(BrandsTable.id, onDelete = ReferenceOption.CASCADE)
+    val brandId = integer("brand_id").references(BrandsTable.id, onDelete = ReferenceOption.CASCADE)
     val modelId = integer("model_id").references(ModelsTable.id, onDelete = ReferenceOption.CASCADE)
     val year = short("year")
     val price = integer("price")
@@ -50,15 +50,15 @@ object CarsTable : Table("cars") {
             it[year] = adRequestDto.car.year
             it[price] = adRequestDto.car.price
             it[mileage] = adRequestDto.car.mileage
-            it[bodyType] = adRequestDto.car.bodyType
+            it[bodyType] = adRequestDto.car.bodyType.toString()
             it[enginePower] = adRequestDto.car.enginePower
             it[engineCapacity] = adRequestDto.car.engineCapacity
-            it[fuelType] = adRequestDto.car.fuelType
+            it[fuelType] = adRequestDto.car.fuelType.toString()
             it[color] = adRequestDto.car.color
-            it[transmission] = adRequestDto.car.transmission
-            it[drivetrain] = adRequestDto.car.drivetrain
-            it[wheel] = adRequestDto.car.wheel
-            it[condition] = adRequestDto.car.condition
+            it[transmission] = adRequestDto.car.transmission.toString()
+            it[drivetrain] = adRequestDto.car.drivetrain.toString()
+            it[wheel] = adRequestDto.car.wheel.toString()
+            it[condition] = adRequestDto.car.condition.toString()
             it[owners] = adRequestDto.car.owners
             it[vin] = adRequestDto.car.vin
             it[ownershipPeriod] = adRequestDto.car.ownershipPeriod

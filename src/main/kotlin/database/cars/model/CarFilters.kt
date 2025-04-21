@@ -30,31 +30,31 @@ data class CarFilters(
     val drivetrain: String? = null,
     val wheel: String? = null,
     val condition: String? = null,
-    val owners: Byte? = null
+    val owners: OwnersOption? = null
 )
 
 val Parameters.asCarFilters
     get() = CarFilters(
         brand = get("brand"),
         model = get("model"),
-        yearMin = get("year_min")?.toShortOrNull(),
-        yearMax = get("year_max")?.toShortOrNull(),
-        priceMin = get("price_min")?.toIntOrNull(),
-        priceMax = get("price_max")?.toIntOrNull(),
-        mileageMin = get("mileage_min")?.toIntOrNull(),
-        mileageMax = get("mileage_max")?.toIntOrNull(),
-        enginePowerMin = get("engine_power_min")?.toShortOrNull(),
-        enginePowerMax = get("engine_power_max")?.toShortOrNull(),
-        engineCapacityMin = get("engine_capacity_min")?.toDoubleOrNull(),
-        engineCapacityMax = get("engine_capacity_max")?.toDoubleOrNull(),
-        fuelType = get("fuel_type"),
-        bodyType = get("body_type"),
+        yearMin = get("yearMin")?.toShortOrNull(),
+        yearMax = get("yearMax")?.toShortOrNull(),
+        priceMin = get("priceMin")?.toIntOrNull(),
+        priceMax = get("priceMax")?.toIntOrNull(),
+        mileageMin = get("mileageMin")?.toIntOrNull(),
+        mileageMax = get("mileageMax")?.toIntOrNull(),
+        enginePowerMin = get("enginePowerMin")?.toShortOrNull(),
+        enginePowerMax = get("enginePowerMax")?.toShortOrNull(),
+        engineCapacityMin = get("engineCapacityMin")?.toDoubleOrNull(),
+        engineCapacityMax = get("engineCapacityMax")?.toDoubleOrNull(),
+        fuelType = get("fuelType"),
+        bodyType = get("bodyType"),
         color = get("color"),
         transmission = get("transmission"),
         drivetrain = get("drivetrain"),
         wheel = get("wheel"),
         condition = get("condition"),
-        owners = get("owners")?.toByteOrNull()
+        owners = parseOwnersOption(get("owners"))
     )
 
 fun CarFilters.toOpCondition(): Op<Boolean> {
@@ -78,7 +78,25 @@ fun CarFilters.toOpCondition(): Op<Boolean> {
         drivetrain?.let { CarsTable.drivetrain eq it },
         wheel?.let { CarsTable.wheel eq it },
         condition?.let { CarsTable.condition eq it },
-        owners?.let { CarsTable.owners eq it }
+        owners?.let { option ->
+            when (option) {
+                OwnersOption.ZERO -> CarsTable.owners eq 0
+                OwnersOption.ONE -> CarsTable.owners eq 1
+                OwnersOption.NO_MORE_THAN_TWO -> CarsTable.owners lessEq 2
+                OwnersOption.NO_MORE_THAN_THREE -> CarsTable.owners lessEq 3
+            }
+        }
     )
     return if (conditions.isNotEmpty()) conditions.reduce { acc, op -> acc and op } else Op.TRUE
 }
+
+enum class OwnersOption(val label: String) {
+    ZERO("Zero"),
+    ONE("One"),
+    NO_MORE_THAN_TWO("No more than two"),
+    NO_MORE_THAN_THREE("No more than three")
+}
+
+fun parseOwnersOption(param: String?) =
+    OwnersOption.entries.find { it.label.equals(param, ignoreCase = true) }
+

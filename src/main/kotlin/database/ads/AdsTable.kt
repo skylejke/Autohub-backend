@@ -18,7 +18,11 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.jetbrains.exposed.sql.javatime.date
 import org.jetbrains.exposed.sql.transactions.transaction
 import utils.authorization.UserNotFoundException
+import utils.cars.enums.OrderParams
+import utils.cars.enums.SortParams
+import utils.cars.exceptions.BrandNotFoundException
 import utils.cars.exceptions.CarAdNotFoundException
+import utils.cars.exceptions.ModelNotFoundException
 import java.time.LocalDate
 import java.util.*
 
@@ -30,7 +34,7 @@ object AdsTable : Table("ads") {
 
     override val primaryKey = PrimaryKey(id)
 
-    fun findAds(query: String?): List<AdResponseDto> = transaction {
+    fun findAds(query: String?, sortParam: String?, orderParam: String?): List<AdResponseDto> = transaction {
         val searchOp: Op<Boolean> = if (!query.isNullOrBlank()) {
             val searchTerm = "%${query.lowercase()}%"
             (BrandsTable.name.lowerCase() like searchTerm) or
@@ -39,9 +43,10 @@ object AdsTable : Table("ads") {
         } else {
             Op.TRUE
         }
-        joinTables()
-            .select { searchOp }
-            .map { it.asAdResponseDto }
+
+        val queryResult = joinTables().select { searchOp }
+
+        queryResult.sort(sortParam, orderParam).map { it.asAdResponseDto }
     }
 
     fun getAdById(adId: String): AdResponseDto? = transaction {
@@ -51,11 +56,34 @@ object AdsTable : Table("ads") {
             ?.asAdResponseDto
     }
 
-    fun getAdsByFilters(filters: CarFilters): List<AdResponseDto> = transaction {
-        joinTables()
-            .select { filters.toOpCondition() }
-            .map { it.asAdResponseDto }
+    fun getAdsByFilters(filters: CarFilters, sortParam: String?, orderParam: String?): List<AdResponseDto> =
+        transaction {
+            val queryResult = joinTables().select { filters.toOpCondition() }
+            queryResult.sort(sortParam, orderParam).map { it.asAdResponseDto }
+        }
+
+    private fun Query.sort(sortParam: String?, orderParam: String?): Query {
+        if (sortParam.isNullOrBlank() || orderParam.isNullOrBlank()) {
+            return this
+        }
+
+        val order = when (orderParam) {
+            OrderParams.ASC.toString() -> SortOrder.ASC
+            OrderParams.DESC.toString() -> SortOrder.DESC
+            else -> throw IllegalStateException("Unexpected order param: $orderParam")
+        }
+
+        val sort = when (sortParam) {
+            SortParams.DATE.toString() -> creationDate
+            SortParams.PRICE.toString() -> CarsTable.price
+            SortParams.MILEAGE.toString() -> CarsTable.mileage
+            SortParams.YEAR.toString() -> CarsTable.year
+            else -> throw IllegalStateException("Unexpected sort param: $sortParam")
+        }
+
+        return orderBy(sort, order)
     }
+
 
     fun getUsersAds(userId: String): List<AdResponseDto> = transaction {
         joinTables()
@@ -103,6 +131,22 @@ object AdsTable : Table("ads") {
         adUpdateRequestDto.car?.let { carUpdateRequestDto ->
             CarsTable.updateById(adRow[carId]) { builder ->
                 with(carUpdateRequestDto) {
+                    brand?.let {
+                        val brandRow = BrandsTable
+                            .select { BrandsTable.name eq it }
+                            .singleOrNull() ?: throw BrandNotFoundException(it)
+                        builder[brandId] = brandRow[BrandsTable.id]
+                    }
+                    model?.let {
+                        val brandName = brand ?: throw IllegalArgumentException("Updating model requires brand value")
+                        val brandRow = BrandsTable
+                            .select { BrandsTable.name eq brandName }
+                            .singleOrNull() ?: throw BrandNotFoundException(brandName)
+                        val modelRow = ModelsTable
+                            .select { (ModelsTable.name eq it) and (ModelsTable.brandId eq brandRow[BrandsTable.id]) }
+                            .singleOrNull() ?: throw ModelNotFoundException(brandName, it)
+                        builder[modelId] = modelRow[ModelsTable.id]
+                    }
                     year?.let { builder[CarsTable.year] = it }
                     price?.let { builder[CarsTable.price] = it }
                     mileage?.let { builder[CarsTable.mileage] = it }
@@ -140,7 +184,3 @@ object AdsTable : Table("ads") {
         .innerJoin(BrandsTable, { ModelsTable.brandId }, { id })
 
 }
-
-
-
-

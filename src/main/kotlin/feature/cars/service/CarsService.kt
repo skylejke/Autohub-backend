@@ -1,10 +1,12 @@
 package feature.cars.service
 
+import common.model.ResponseMessage
 import database.ads.AdsTable
 import database.ads.model.asAdRequestDto
 import database.brands.BrandsTable
 import database.car_ad_photos.CarAdsPhotosTable
 import database.cars.model.asCarFilters
+import database.comparisons.ComparisonsTable
 import database.favourites.FavouritesTable
 import database.models.ModelsTable
 import feature.cars.model.request.*
@@ -34,7 +36,7 @@ object CarsService {
     suspend fun getModelsByBrand(call: ApplicationCall) {
         val brandName = call.parameters["brandName"]?.lowercase() ?: return call.respond(
             HttpStatusCode.BadRequest,
-            "Brand id is required"
+            ResponseMessage("Brand id is required")
         )
         val modelResponses = ModelsTable.getModelsByBrandName(brandName).map { it.asModelResponse }
         call.respond(HttpStatusCode.OK, modelResponses)
@@ -42,7 +44,13 @@ object CarsService {
 
     suspend fun getAdsByQuery(call: ApplicationCall) {
         val query = call.request.queryParameters["query"].orEmpty()
-        val adResponses = AdsTable.findAds(query).map { it.asAdResponse }
+        val sortParam = call.request.queryParameters["sortParam"].orEmpty()
+        val orderParam = call.request.queryParameters["orderParam"].orEmpty()
+        val adResponses = AdsTable.findAds(
+            query = query,
+            sortParam = sortParam,
+            orderParam = orderParam
+        ).map { it.asAdResponse }
         call.respond(HttpStatusCode.OK, adResponses)
     }
 
@@ -58,14 +66,20 @@ object CarsService {
     suspend fun getAdsByFilters(call: ApplicationCall) {
         val params = call.request.queryParameters
         val filters = params.asCarFilters
-        val adResponses = AdsTable.getAdsByFilters(filters).map { it.asAdResponse }
+        val sortParam = call.request.queryParameters["sortParam"].orEmpty()
+        val orderParam = call.request.queryParameters["orderParam"].orEmpty()
+        val adResponses = AdsTable.getAdsByFilters(
+            filters = filters,
+            sortParam = sortParam,
+            orderParam = orderParam
+        ).map { it.asAdResponse }
         call.respond(HttpStatusCode.OK, adResponses)
     }
 
     suspend fun getUsersAds(call: ApplicationCall) {
         val userId = call.parameters["userId"]?.lowercase() ?: return call.respond(
             HttpStatusCode.BadRequest,
-            "User id is required"
+            ResponseMessage("User id is required")
         )
         val adResponses = AdsTable.getUsersAds(userId).map { it.asAdResponse }
         call.respond(HttpStatusCode.OK, adResponses.ifEmpty { "You have no ads" })
@@ -74,7 +88,7 @@ object CarsService {
     suspend fun createNewAd(call: ApplicationCall) {
         val userId = call.parameters["userId"]?.lowercase() ?: return call.respond(
             HttpStatusCode.BadRequest,
-            "User id is required"
+            ResponseMessage("User id is required")
         )
 
         var carJson: String? = null
@@ -89,26 +103,29 @@ object CarsService {
                 }
 
                 is PartData.FileItem -> {
-                    if (part.name == "photo") {
+                    if (part.name == "newPhotos") {
                         photoBytesList.add(part.provider().readRemaining().readByteArray())
                     }
                 }
 
                 else -> {
-                    call.respond(HttpStatusCode.BadRequest, "Wrong part data")
+                    call.respond(HttpStatusCode.BadRequest, ResponseMessage("Wrong part data"))
                 }
             }
             part.dispose()
         }
 
         if (carJson == null) {
-            return call.respond(HttpStatusCode.BadRequest, "Missing car data")
+            return call.respond(HttpStatusCode.BadRequest, ResponseMessage("Missing car data"))
         }
 
         val carRequest: CarRequest = try {
             Json.decodeFromString(carJson!!)
         } catch (e: Exception) {
-            return call.respond(HttpStatusCode.BadRequest, "Invalid car data format: ${e.localizedMessage}")
+            return call.respond(
+                HttpStatusCode.BadRequest,
+                ResponseMessage("Invalid car data format: ${e.localizedMessage}")
+            )
         }
 
         val adRequest = AdRequest(car = carRequest, photos = photoBytesList)
@@ -116,11 +133,11 @@ object CarsService {
         try {
             adRequest.validate()
             AdsTable.insertAd(userId, adRequest.asAdRequestDto)
-            call.respond(HttpStatusCode.Created, "Successfully created new car ad")
+            call.respond(HttpStatusCode.Created, ResponseMessage("Successfully created new car ad"))
         } catch (e: ValidationException) {
-            return call.respond(HttpStatusCode.BadRequest, e.message ?: "Validation error")
+            return call.respond(HttpStatusCode.BadRequest, ResponseMessage(e.message ?: "Validation error"))
         } catch (e: Exception) {
-            call.respond(HttpStatusCode.BadRequest, "Can't create ad: ${e.localizedMessage}")
+            call.respond(HttpStatusCode.BadRequest, ResponseMessage("Can't create ad: ${e.localizedMessage}"))
         }
     }
 
@@ -144,10 +161,14 @@ object CarsService {
     suspend fun updateAdById(call: ApplicationCall) {
         val userId = call.parameters["userId"]?.lowercase() ?: return call.respond(
             HttpStatusCode.BadRequest,
-            "User id is required"
+            ResponseMessage("User id is required")
         )
+
         val adId =
-            call.parameters["adId"]?.lowercase() ?: return call.respond(HttpStatusCode.BadRequest, "Ad id is required")
+            call.parameters["adId"]?.lowercase() ?: return call.respond(
+                HttpStatusCode.BadRequest,
+                ResponseMessage("Ad id is required")
+            )
 
         var carJson: String? = null
         val newPhotoBytesList = mutableListOf<ByteArray>()
@@ -175,7 +196,7 @@ object CarsService {
                 }
 
                 else -> {
-                    call.respond(HttpStatusCode.BadRequest, "Wrong part data")
+                    call.respond(HttpStatusCode.BadRequest, ResponseMessage("Wrong part data"))
                 }
             }
             part.dispose()
@@ -185,7 +206,10 @@ object CarsService {
             try {
                 Json.decodeFromString<CarUpdateRequest>(it)
             } catch (e: Exception) {
-                return call.respond(HttpStatusCode.BadRequest, "Invalid car update data: ${e.localizedMessage}")
+                return call.respond(
+                    HttpStatusCode.BadRequest,
+                    ResponseMessage("Invalid car update data: ${e.localizedMessage}")
+                )
             }
         }
 
@@ -197,45 +221,51 @@ object CarsService {
 
         try {
             AdsTable.updateAdById(userId, adId, adUpdateRequest.asAdUpdateRequestDto)
-            call.respond(HttpStatusCode.OK, "Successfully updated car ad")
+            call.respond(HttpStatusCode.OK, ResponseMessage("Successfully updated car ad"))
         } catch (e: Exception) {
-            call.respond(HttpStatusCode.BadRequest, "Can't update ad: ${e.localizedMessage}")
+            call.respond(HttpStatusCode.BadRequest, ResponseMessage("Can't update ad: ${e.localizedMessage}"))
         }
     }
 
     suspend fun addAdToFavourites(call: ApplicationCall) {
         val userId = call.parameters["userId"]?.lowercase() ?: return call.respond(
             HttpStatusCode.BadRequest,
-            "User id is required"
+            ResponseMessage("User id is required")
         )
         val adId = call.parameters["adId"]?.lowercase() ?: return call.respond(
             HttpStatusCode.BadRequest,
-            "Ad id is required"
+            ResponseMessage("Ad id is required")
         )
 
         try {
             FavouritesTable.insertAd(userId, adId)
-            call.respond(HttpStatusCode.OK, "Successfully created new favourite ad")
+            call.respond(HttpStatusCode.OK, ResponseMessage("Successfully created new favourite ad"))
         } catch (e: Exception) {
-            call.respond(HttpStatusCode.BadRequest, "Can't add to favourites favourite ad: ${e.localizedMessage}")
+            call.respond(
+                HttpStatusCode.BadRequest,
+                ResponseMessage("Can't add to favourites favourite ad: ${e.localizedMessage}")
+            )
         }
     }
 
     suspend fun removeAdFromFavourites(call: ApplicationCall) {
         val userId = call.parameters["userId"]?.lowercase() ?: return call.respond(
             HttpStatusCode.BadRequest,
-            "User id is required"
+            ResponseMessage("User id is required")
         )
         val adId = call.parameters["adId"]?.lowercase() ?: return call.respond(
             HttpStatusCode.BadRequest,
-            "Ad id is required"
+            ResponseMessage("Ad id is required")
         )
 
         try {
             FavouritesTable.deleteAd(userId, adId)
-            call.respond(HttpStatusCode.OK, "Successfully removed car ad from favourites")
+            call.respond(HttpStatusCode.OK, ResponseMessage("Successfully removed car ad from favourites"))
         } catch (e: Exception) {
-            call.respond(HttpStatusCode.BadRequest, "Can't remove ad from favourites: ${e.localizedMessage}")
+            call.respond(
+                HttpStatusCode.BadRequest,
+                ResponseMessage("Can't remove ad from favourites: ${e.localizedMessage}")
+            )
         }
     }
 
@@ -264,5 +294,56 @@ object CarsService {
         } else {
             call.respondBytes(photoBytes, ContentType.Image.JPEG)
         }
+    }
+
+    suspend fun insertAdToComparisons(call: ApplicationCall) {
+        val userId = call.parameters["userId"]?.lowercase() ?: return call.respond(
+            HttpStatusCode.BadRequest,
+            ResponseMessage("User id is required")
+        )
+        val adId = call.parameters["adId"]?.lowercase() ?: return call.respond(
+            HttpStatusCode.BadRequest,
+            ResponseMessage("Ad id is required")
+        )
+
+        try {
+            ComparisonsTable.insertAdToComparisons(userId, adId)
+            call.respond(HttpStatusCode.OK, ResponseMessage("Successfully added ad to comparisons list"))
+        } catch (e: Exception) {
+            call.respond(
+                HttpStatusCode.BadRequest,
+                ResponseMessage("Can't add to comparisons ad: ${e.localizedMessage}")
+            )
+        }
+    }
+
+    suspend fun removeAdFromComparisons(call: ApplicationCall) {
+        val userId = call.parameters["userId"]?.lowercase() ?: return call.respond(
+            HttpStatusCode.BadRequest,
+            ResponseMessage("User id is required")
+        )
+        val adId = call.parameters["adId"]?.lowercase() ?: return call.respond(
+            HttpStatusCode.BadRequest,
+            ResponseMessage("Ad id is required")
+        )
+
+        try {
+            ComparisonsTable.deleteAdFromComparisons(userId, adId)
+            call.respond(HttpStatusCode.OK, ResponseMessage("Successfully removed car ad from comparisons list"))
+        } catch (e: Exception) {
+            call.respond(
+                HttpStatusCode.BadRequest,
+                ResponseMessage("Can't remove ad from comparisons: ${e.localizedMessage}")
+            )
+        }
+    }
+
+    suspend fun getUsersComparisons(call: ApplicationCall) {
+        val userId = call.parameters["userId"]?.lowercase() ?: return call.respond(
+            HttpStatusCode.BadRequest,
+            "User id is required"
+        )
+        val adResponses = ComparisonsTable.getComparisonsList(userId).map { it.asAdResponse }
+        call.respond(HttpStatusCode.OK, adResponses)
     }
 }
